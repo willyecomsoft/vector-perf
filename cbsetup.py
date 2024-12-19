@@ -67,8 +67,10 @@ def create_collection(bucket_name, scope_name, collection_name):
         return False
 
 
+BUCKET_MAIN_RAM = os.getenv("BUCKET_MAIN_RAM", 18000)
+
 # create bucket main 
-BUCKET_MAIN_ID = create_bucket("vector-sample", 18000)
+BUCKET_MAIN_ID = create_bucket("vector-sample", BUCKET_MAIN_RAM)
 
 if BUCKET_MAIN_ID is not None:
     scope_data_created = create_scope("color", "vector-sample") 
@@ -76,10 +78,13 @@ if BUCKET_MAIN_ID is not None:
     if scope_data_created:
         create_collection("vector-sample", "color", "transitory")
         create_collection("vector-sample", "color", "data")
-        
-        
+
+
+
+BUCKET_EVENTING_RAM = os.getenv("BUCKET_EVENTING_RAM", 2000)
+
 # create bucket eventing 
-BUCKET_EVENTING_ID = create_bucket("eventing", 2000)
+BUCKET_EVENTING_ID = create_bucket("eventing", BUCKET_EVENTING_RAM)
 
 if BUCKET_EVENTING_ID is not None:
     create_collection("eventing", "_default", "raw")
