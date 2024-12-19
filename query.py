@@ -67,7 +67,7 @@ def query_couchbase():
         
         with open(file_name, mode='a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([len(found), start_time_str, completion_time_str, time_difference, found[0]])
+            writer.writerow([len(found), start_time_str, completion_time_str, time_difference, found[0], threading.get_ident()])
 
         sleep_until_next_second()
 
