@@ -56,7 +56,7 @@ def run_single_thread():
         
             # get current time in local time format
             start_time = time.localtime()
-            insert_doc("vector-sample", "color", "rgb", row.to_dict(), None, False, True)
+            insert_doc("vector-sample", "color", "data", row.to_dict(), None, False, True)
             
             # print finish time and time difference in milliseconds
             time_difference = int((time.time() - time.mktime(start_time)) * 1000) 
