@@ -18,7 +18,7 @@ now_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
 file_name = f"{QUERY_USER_COUNT}*{QUERY_VECTOR_COUNT}_{now_str}.csv"
 
 RAMDOM_START = os.getenv("RAMDOM_START", 0.001)
-RAMDOM_END = os.getenv("RAMDOM_END", 0.009)
+RAMDOM_END = os.getenv("RAMDOM_END", 0.05)
 
 def modify_embedding_vector(embedding_vector): 
     copy = embedding_vector[:]
@@ -45,29 +45,30 @@ def query_couchbase():
             vectors.append(modify_embedding_vector(VECTOR))
 
         # get current time in local time format
-        start_time = time.localtime()
-        print(f"Start Time: {time.strftime('%X', start_time)}")
+        start_time = time.time()
+        print(f"Start Time: {time.strftime('%X', time.localtime(start_time))}")
 
-        found = []
+        color = ""
+        count = 0
 
         for vector in vectors:
             result = cb_vector_search("vector-sample", "color", "color-vector", "embedding_vector_dot", vector, ["color"])  
             
             for row in result.rows():
                 color = row.fields.get("color")  # 提取指定欄位
-                found.append(f"{row.id},{color}")
+                count += 1
 
         # print finish time and time difference in milliseconds
-        completion_time = time.localtime()
-        time_difference = time.time() - time.mktime(start_time)
+        completion_time = time.time()
+        time_difference = completion_time - start_time
         
-        start_time_str = time.strftime('%Y-%m-%d %H:%M:%S', start_time)
-        completion_time_str = time.strftime('%Y-%m-%d %H:%M:%S', completion_time)
+        start_time_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))
+        completion_time_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(completion_time))
         # append start_time, completion_time, and time_difference the a new line in results.csv
         
         with open(file_name, mode='a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([len(found), start_time_str, completion_time_str, time_difference, found[0], threading.get_ident()])
+            writer.writerow([count, int(time_difference * 1000.0), f'{time_difference} sec', start_time_str, completion_time_str, color, threading.get_ident()])
 
         sleep_until_next_second()
 
